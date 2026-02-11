@@ -1,31 +1,72 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h3 class="card-title text-center">Criar Conta de Advogado</h3>
-                <form method="post">
-                    {% csrf_token %}
-                    
-                    {% for field in form %}
-                    <div class="mb-3">
-                        <label class="form-label">{{ field.label }}</label>
-                        {{ field }}
-                        {% if field.help_text %}
-                        <small class="form-text text-muted">{{ field.help_text }}</small>
-                        {% endif %}
-                        {% for error in field.errors %}
-                        <div class="text-danger small">{{ error }}</div>
-                        {% endfor %}
-                    </div>
-                    {% endfor %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5 col-lg-4">
+            
+            <div class="card shadow-lg border-0 rounded-3">
+                
+                <div class="card-header bg-primary text-white text-center py-4 rounded-top-3">
+                    <h2 class="mb-0 fs-4 fw-bold">
+                        <i class="bi bi-person-badge-fill me-2"></i>Novo Usuario
+                    </h2>
+                    <small class="text-white-50">Crie sua conta para acessar o sistema</small>
+                </div>
 
-                    <button type="submit" class="btn btn-success w-100">Criar Conta</button>
-                </form>
+                <div class="card-body p-4">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% for field in form %}
+                        <div class="mb-3">
+                            <label class="form-label fw-bold text-secondary small">{{ field.label }}</label>
+                            
+                            {{ field }}
+                            
+                            {% if field.help_text %}
+                            <div class="form-text text-muted small mt-1">
+                                <i class="bi bi-info-circle me-1"></i>{{ field.help_text }}
+                            </div>
+                            {% endif %}
+                            
+                            {% if field.errors %}
+                            <div class="alert alert-danger py-1 px-2 mt-1 mb-0 small">
+                                {{ field.errors.0 }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        {% endfor %}
+
+                        <div class="d-grid mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm">
+                                <i class="bi bi-check-lg me-2"></i>Criar Conta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card-footer bg-light text-center py-3 rounded-bottom-3 border-0">
+                    <small class="text-muted">Já possui cadastro?</small>
+                    <a href="{% url 'login' %}" class="text-decoration-none fw-bold ms-1">Fazer Login</a>
+                </div>
             </div>
+
+            <div class="text-center mt-3 text-muted small">
+                <i class="bi bi-shield-lock-fill me-1"></i>Sistema Seguro e Criptografado
+            </div>
+
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputs = document.querySelectorAll('input, select, textarea');
+        inputs.forEach(function(input) {
+            input.classList.add('form-control'); // Adiciona estilo padrão
+            input.classList.add('bg-light');     // Fundo levemente cinza
+        });
+    });
+</script>
 {% endblock %}
