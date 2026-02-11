@@ -1,24 +1,76 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<div class="row justify-content-center mt-5">
-    <div class="col-md-4">
-        <div class="card shadow">
-            <div class="card-header bg-primary text-white text-center">
-                <h4>Entrar no Sistema</h4>
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-md-5 col-lg-4">
+            
+            <div class="text-center mb-4">
+                <div class="d-inline-flex align-items-center justify-content-center bg-primary text-white rounded-circle shadow" style="width: 80px; height: 80px;">
+                    <i class="bi bi-briefcase-fill fs-1"></i>
+                </div>
+                <h3 class="mt-3 fw-bold text-secondary">Sistema Jurídico</h3>
             </div>
-            <div class="card-body">
-                <form method="post">
-                    {% csrf_token %}
-                    {{ form.as_p }}
+
+            <div class="card shadow-lg border-0 rounded-4">
+                <div class="card-body p-4">
                     
-                    <button type="submit" class="btn btn-primary w-100">Entrar</button>
-                </form>
+                    <h4 class="card-title text-center mb-4 fw-bold text-primary">Bem-vindo</h4>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        {% if form.errors %}
+                            <div class="alert alert-danger d-flex align-items-center small py-2 mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <div>Usuário ou senha inválidos.</div>
+                            </div>
+                        {% endif %}
+
+                        <div class="mb-3">
+                            <label class="form-label text-muted small fw-bold">Usuário</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-person-fill text-muted"></i></span>
+                                {{ form.username }}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label text-muted small fw-bold">Senha</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock-fill text-muted"></i></span>
+                                {{ form.password }}
+                            </div>
+                        </div>
+
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm fw-bold">
+                                Entrar no Sistema
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div class="card-footer bg-white text-center py-3 border-0 rounded-bottom-4">
+                    <small class="text-muted">Ainda não tem acesso?</small>
+                    <a href="{% url 'cadastro' %}" class="text-decoration-none fw-bold ms-1">Criar Conta</a>
+                </div>
             </div>
-            <div class="card-footer text-center">
-                <small>Não tem conta? <a href="{% url 'cadastro' %}">Cadastre-se aqui</a></small>
-            </div>
+
+            
         </div>
     </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputs = document.querySelectorAll('input');
+        inputs.forEach(function(input) {
+            input.classList.add('form-control');
+            input.classList.add('border-start-0'); // Remove borda esquerda para colar no ícone
+            input.classList.add('ps-1');           // Pequeno ajuste de padding
+            input.style.backgroundColor = "#f8f9fa"; // Fundo cinza claro
+        });
+    });
+</script>
 {% endblock %}
