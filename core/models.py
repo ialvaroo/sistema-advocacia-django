@@ -26,8 +26,8 @@ class Cliente(models.Model):
 
     #Documentos  e Nascimento 
     cpf_cnpj = models.CharField(max_length=20, unique=True, verbose_name="CPF/CNPJ")
-    rg = models.CharField(max_length=20, blank=True, null=True)
-    orgao_expeditor = models.CharField(max_length=20, default='SSP/BA', verbose_name="Órgão Expeditor (Ex: SSP/BA)")
+    rg = models.CharField(max_length=20, blank=True, null=True, verbose_name="RG")
+    orgao_expeditor = models.CharField(max_length=20, blank=True, null=True, verbose_name="Órgão Expeditor")
     data_nascimento = models.DateField(null=True, blank=True, verbose_name="Data de Nascimento")
 
     #Endereço
