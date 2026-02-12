@@ -1,8 +1,9 @@
-from django.shortcuts import render, redirect, get_object_or_404 
+from django.shortcuts import render, redirect, get_object_or_404
 from django.http import HttpResponse
-from django.contrib.auth.forms import UserCreationForm
+# Importamos os dois formulários de autenticação aqui no topo
+from django.contrib.auth.forms import UserCreationForm, AuthenticationForm
 from django.contrib.auth.decorators import login_required
-from django.db.models import Sum, Count
+from django.db.models import Sum
 from docxtpl import DocxTemplate
 import io
 from .models import Cliente, ModeloDocumento, Documento
@@ -14,19 +15,20 @@ from financeiro.models import Honorario
 # ========================================================
 
 def home(request):
-    # Se não estiver logado, mostra tela simples
+    # Se NÃO estiver logado, exibe a tela com o formulário de login
     if not request.user.is_authenticated:
-        return render(request, 'home.html')
+        form_login = AuthenticationForm()
+        return render(request, 'home.html', {'form_login': form_login})
     
-    # 1. Totais Simples
+    # Se ESTIVER logado, calcula e exibe o Dashboard
     total_clientes = Cliente.objects.count()
     total_docs = Documento.objects.count()
     
-    # 2. Financeiro (Soma dos valores)
+    # Cálculos financeiros (tratando valores nulos com 'or 0')
     total_receber = Honorario.objects.filter(status='PEN').aggregate(Sum('valor'))['valor__sum'] or 0
     total_recebido = Honorario.objects.filter(status='PAG').aggregate(Sum('valor'))['valor__sum'] or 0
     
-    # 3. Últimos 5 documentos gerados
+    # Últimos 5 documentos
     ultimos_docs = Documento.objects.all().order_by('-data_geracao')[:5]
 
     return render(request, 'home.html', {
@@ -73,19 +75,13 @@ def novo_cliente(request):
         return redirect('lista_clientes')
     return render(request, 'core/form_cliente.html', {'form': form})
 
-# FUNÇÃO DE EDITAR
 @login_required
 def editar_cliente(request, id):
-    # Busca o cliente ou avisa se não existir
     cliente = get_object_or_404(Cliente, id=id)
-    
-    # Preenche o formulário com os dados existentes
     form = ClienteForm(request.POST or None, instance=cliente)
-    
     if form.is_valid():
         form.save()
         return redirect('lista_clientes')
-        
     return render(request, 'core/form_cliente.html', {'form': form})
 
 # ========================================================
@@ -115,7 +111,7 @@ def gerar_documento(request, cliente_id, modelo_id):
     # 2. Carrega template
     doc = DocxTemplate(modelo_db.arquivo_template.path)
     
-    # 3. Define contexto
+    # 3. Define contexto (dados que vão para o Word)
     contexto = {
         'nome_completo': cliente.nome_completo,
         'cpf_cnpj': cliente.cpf_cnpj,
@@ -133,7 +129,7 @@ def gerar_documento(request, cliente_id, modelo_id):
     doc.save(buffer)
     buffer.seek(0)
     
-    # 6. Salva no histórico
+    # 6. Salva no histórico do banco de dados
     Documento.objects.create(
         cliente=cliente,
         modelo=modelo_db,
@@ -141,7 +137,7 @@ def gerar_documento(request, cliente_id, modelo_id):
         criado_por=request.user
     )
 
-    # 7. Download
+    # 7. Prepara o download
     filename = f"{cliente.nome_completo}_{modelo_db.titulo}.docx"
     response = HttpResponse(buffer.getvalue(), content_type='application/vnd.openxmlformats-officedocument.wordprocessingml.document')
     response['Content-Disposition'] = f'attachment; filename="{filename}"'
