@@ -22,7 +22,9 @@
             <td>{{ cliente.cpf_cnpj }}</td>
             <td>{{ cliente.contato }}</td>
             <td>
-                <button class="btn btn-sm btn-primary">Editar</button>
+                <a href="{% url 'editar_cliente' cliente.id %}" class="btn btn-sm btn-primary">
+                    Editar
+                </a>
                 <a href="{% url 'selecionar_modelo' cliente.id %}" class="btn btn-sm btn-warning">
                     Gerar Procuração
                 </a>
