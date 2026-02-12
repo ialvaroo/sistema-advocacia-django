@@ -5,6 +5,11 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum
 from docxtpl import DocxTemplate
 import io
+from datetime import datetime
+import locale
+
+locale.setlocale(locale.LC_TIME, 'pt_BR.UTF-8')
+
 
 # Importando Modelos e Formulários
 from .models import Cliente, ModeloDocumento, Documento
@@ -131,6 +136,7 @@ def gerar_documento(request, cliente_id, modelo_id):
         'cep': cliente.cep,
         'telefone': cliente.contato,
         'profissao': cliente.profissao,
+        'hoje': datetime.now().strftime("%d de %B de %Y"),
     }
     
     doc.render(contexto)
