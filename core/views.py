@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404 
 from django.http import HttpResponse
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.decorators import login_required
@@ -21,14 +21,11 @@ def home(request):
     if not request.user.is_authenticated:
         return render(request, 'home.html')
     
-    # Se estiver logado, calcula os dados do Dashboard
-    
     # 1. Totais Simples
     total_clientes = Cliente.objects.count()
     total_docs = Documento.objects.count()
     
     # 2. Financeiro (Soma dos valores)
-    # Pega a soma dos Honorários Pendentes (PEN) e Pagos (PAG)
     total_receber = Honorario.objects.filter(status='PEN').aggregate(Sum('valor'))['valor__sum'] or 0
     total_recebido = Honorario.objects.filter(status='PAG').aggregate(Sum('valor'))['valor__sum'] or 0
     
@@ -68,6 +65,21 @@ def novo_cliente(request):
     if form.is_valid():
         form.save()
         return redirect('lista_clientes')
+    return render(request, 'core/form_cliente.html', {'form': form})
+
+# FUNÇÃO DE EDITAR
+@login_required
+def editar_cliente(request, id):
+    # Busca o cliente ou avisa se não existir
+    cliente = get_object_or_404(Cliente, id=id)
+    
+    # Preenche o formulário com os dados existentes
+    form = ClienteForm(request.POST or None, instance=cliente)
+    
+    if form.is_valid():
+        form.save()
+        return redirect('lista_clientes')
+        
     return render(request, 'core/form_cliente.html', {'form': form})
 
 # ========================================================
