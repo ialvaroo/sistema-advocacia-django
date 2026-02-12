@@ -5,11 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Sum, Count
 from docxtpl import DocxTemplate
 import io
-
-# Importando Modelos e Formulários
 from .models import Cliente, ModeloDocumento, Documento
 from .forms import ClienteForm
-# Importando o modelo financeiro para o Dashboard
 from financeiro.models import Honorario
 
 # ========================================================
@@ -58,6 +55,15 @@ def cadastro(request):
 def lista_clientes(request):
     clientes = Cliente.objects.all()
     return render(request, 'core/lista_clientes.html', {'clientes': clientes})
+    
+@login_required
+def lista_clientes(request):
+    clientes_ativos = Cliente.objects.filter(ativo=True).order_by('nome_completo')
+    clientes_inativos = Cliente.objects.filter(ativo=False).order_by('nome_completo')
+    return render(request, 'core/lista_clientes.html', {
+        'clientes_ativos': clientes_ativos, 
+        'clientes_inativos': clientes_inativos
+    })
 
 @login_required
 def novo_cliente(request):

@@ -1,8 +1,15 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class Cliente(models.Model):
-    # Dados baseados na seção 6.2 do documento [cite: 63-71]
+
+    SEXO_CHOICES = [
+        ('M', 'Masculino'),
+        ('F', 'Feminino')
+    ]
+
+
     ESTADO_CIVIL_CHOICES = [
         ('S', 'Solteiro(a)'),
         ('C', 'Casado(a)'),
@@ -10,14 +17,31 @@ class Cliente(models.Model):
         ('V', 'Viúvo(a)'),
     ]
 
+    #Dados Pessoais 
     nome_completo = models.CharField(max_length=255)
+    sexo = models.CharField(max_length=1, choices=SEXO_CHOICES, default='M', verbose_name="Sexo")
+    nacionalidade = models.CharField(max_length=50, default='Brasileira(o)')
+    estado_civil = models.CharField(max_length=1, choices=ESTADO_CIVIL_CHOICES)
+    eh_deficiente = models.BooleanField(default=False, verbose_name="É Pessoa com Deficiência?")
+
+    #Documentos  e Nascimento 
     cpf_cnpj = models.CharField(max_length=20, unique=True, verbose_name="CPF/CNPJ")
     rg = models.CharField(max_length=20, blank=True, null=True)
-    endereco = models.TextField(verbose_name="Endereço Completo")
-    estado_civil = models.CharField(max_length=1, choices=ESTADO_CIVIL_CHOICES)
+    orgao_expeditor = models.CharField(max_length=20, default='SSP/BA', verbose_name="Órgão Expeditor (Ex: SSP/BA)")
+    data_nascimento = models.DateField(null=True, blank=True, verbose_name="Data de Nascimento")
+
+    #Endereço
+    endereco = models.CharField(max_length=255, verbose_name="Rua / Logradouro") # Mudou de TextField para CharField
+    numero = models.CharField(max_length=10, verbose_name="Número")
+    bairro = models.CharField(max_length=100, default='')
+    cidade = models.CharField(max_length=100, default='')
+    cep = models.CharField(max_length=10, verbose_name="CEP")
+
     profissao = models.CharField(max_length=100)
     contato = models.CharField(max_length=100, help_text="Email ou Telefone")
     
+    # O campo novo entra aqui, fora da lista de choices
+    ativo = models.BooleanField(default=True, verbose_name="Cliente Ativo?")
     criado_em = models.DateTimeField(auto_now_add=True)
     atualizado_em = models.DateTimeField(auto_now=True)
 
@@ -25,7 +49,6 @@ class Cliente(models.Model):
         return self.nome_completo
 
 class ModeloDocumento(models.Model):
-    # Entidade citada na seção 6.1 (Diagrama ER) [cite: 53, 58]
     titulo = models.CharField(max_length=100)
     descricao = models.TextField(blank=True)
     arquivo_template = models.FileField(upload_to='templates_docs/', help_text="Arquivo .docx base com as tags {{nome}}, etc.")
@@ -34,13 +57,12 @@ class ModeloDocumento(models.Model):
         return self.titulo
 
 class Documento(models.Model):
-    # Dados baseados na Tabela Documento [cite: 72-77]
     cliente = models.ForeignKey(Cliente, on_delete=models.CASCADE, related_name='documentos')
     modelo = models.ForeignKey(ModeloDocumento, on_delete=models.SET_NULL, null=True, blank=True)
-    tipo = models.CharField(max_length=50, help_text="Ex: Procuração, Contrato")
+    tipo = models.CharField(max_length=50)
     arquivo_gerado = models.FileField(upload_to='documentos_gerados/')
     data_geracao = models.DateTimeField(auto_now_add=True)
-    criado_por = models.ForeignKey(User, on_delete=models.PROTECT) # Segurança: saber quem gerou [cite: 57]
+    criado_por = models.ForeignKey(User, on_delete=models.PROTECT)
 
     def __str__(self):
         return f"{self.tipo} - {self.cliente.nome_completo}"

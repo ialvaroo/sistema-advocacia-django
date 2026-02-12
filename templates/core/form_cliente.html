@@ -1,31 +1,103 @@
 {% extends 'base.html' %}
 
 {% block content %}
-<h2>Cadastro de Cliente</h2>
-<div class="card p-4">
-    <form method="post">
-        {% csrf_token %} <div class="row">
-            <div class="col-md-6 mb-3">
-                <label>Nome Completo</label>
-                {{ form.nome_completo }}
-            </div>
-            <div class="col-md-6 mb-3">
-                <label>CPF/CNPJ</label>
-                {{ form.cpf_cnpj }}
-            </div>
+<div class="container mt-4 mb-5">
+    <div class="card shadow border-0">
+        <div class="card-header bg-primary text-white p-3">
+            <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Cadastro de Cliente</h4>
         </div>
-        
-        {% for field in form %}
-            {% if field.name not in 'nome_completo cpf_cnpj' %}
-            <div class="mb-3">
-                <label>{{ field.label }}</label>
-                {{ field }}
-            </div>
-            {% endif %}
-        {% endfor %}
+        <div class="card-body p-4">
+            <form method="post">
+                {% csrf_token %}
+                
+                <div class="row">
+                    <div class="col-md-8 mb-3">
+                        <label class="form-label fw-bold small">Nome Completo</label>
+                        {{ form.nome_completo }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">Sexo</label>
+                        {{ form.sexo }}
+                    </div>
 
-        <button type="submit" class="btn btn-success">Salvar Cliente</button>
-        <a href="{% url 'lista_clientes' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">Data de Nascimento</label>
+                        {{ form.data_nascimento }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">Nacionalidade</label>
+                        {{ form.nacionalidade }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">Estado Civil</label>
+                        {{ form.estado_civil }}
+                    </div>
+
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">CPF/CNPJ</label>
+                        {{ form.cpf_cnpj }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">RG</label>
+                        {{ form.rg }}
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label fw-bold small">Órgão Expeditor</label>
+                        {{ form.orgao_expeditor }}
+                    </div>
+
+                    <hr class="my-3 text-muted">
+
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold small">CEP</label>
+                        {{ form.cep }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small">Cidade</label>
+                        {{ form.cidade }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold small">Bairro</label>
+                        {{ form.bairro }}
+                    </div>
+                    <div class="col-md-9 mb-3">
+                        <label class="form-label fw-bold small">Logradouro / Rua</label>
+                        {{ form.endereco }}
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <label class="form-label fw-bold small">Número</label>
+                        {{ form.numero }}
+                    </div>
+
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small">Profissão</label>
+                        {{ form.profissao }}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label fw-bold small">Contato (WhatsApp/Email)</label>
+                        {{ form.contato }}
+                    </div>
+
+                    <div class="col-md-12 mb-3">
+                        <div class="form-check form-check-inline me-4">
+                            {{ form.eh_deficiente }}
+                            <label class="form-check-label ms-1">É Pessoa com Deficiência?</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            {{ form.ativo }}
+                            <label class="form-check-label ms-1 text-success fw-bold">Cliente Ativo?</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-4 border-top pt-3 text-end">
+                    <a href="{% url 'lista_clientes' %}" class="btn btn-light me-2">Cancelar</a>
+                    <button type="submit" class="btn btn-primary px-5 shadow-sm">
+                        <i class="bi bi-save me-2"></i>Salvar Cliente
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %}
