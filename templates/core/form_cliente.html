@@ -121,6 +121,10 @@
 
                 <div class="mt-4 border-top pt-3 text-end">
                     <a href="{% url 'lista_clientes' %}" class="btn btn-light me-2">Cancelar</a>
+                    <button type="button" id="btnLimpar" class="btn btn-outline-secondary me-2">
+                        <i class="bi bi-eraser me-2"></i>Limpar
+                    </button>
+
                     <button type="submit" class="btn btn-primary px-5 shadow-sm">
                         <i class="bi bi-save me-2"></i>Salvar Cliente
                     </button>
@@ -175,6 +179,18 @@
             $('#check_possui_rg').prop('checked', false);
             $('#secao_rg').hide();
         }
+    });
+
+        $(document).ready(function(){
+        $('#btnLimpar').click(function() {
+            if (confirm("Tem certeza que deseja limpar todo o formulário?")) {
+                $('#formCliente')[0].reset();
+                $('#formCliente').find('input[type=text], input[type=date], select, textarea').val('');
+                $('#check_possui_rg').prop('checked', true).change();
+                $('input[type=checkbox]').prop('checked', false);
+                $('input[name="ativo"]').prop('checked', true);
+            }
+        });
     });
 </script>
 {% endblock %}

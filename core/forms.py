@@ -4,7 +4,6 @@ from .models import Cliente
 class ClienteForm(forms.ModelForm):
     class Meta:
         model = Cliente
-        # Listamos todos os novos campos aqui
         fields = [
             'nome_completo', 'sexo', 'nacionalidade', 'estado_civil', 'eh_deficiente',
             'data_nascimento', 'cpf_cnpj', 'rg', 'orgao_expeditor', 'profissao',
@@ -31,3 +30,8 @@ class ClienteForm(forms.ModelForm):
             'ativo': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
             'eh_deficiente': forms.CheckboxInput(attrs={'class': 'form-check-input'}),
         }
+
+    def __init__(self, *args, **kwargs):
+        super(ClienteForm, self).__init__(*args, **kwargs)
+        self.fields['rg'].required = False
+        self.fields['orgao_expeditor'].required = False
