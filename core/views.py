@@ -52,7 +52,6 @@ def cadastro(request):
 
 @login_required
 def lista_clientes(request):
-    # Removi a duplicata e mantive a separação por ativos/inativos
     clientes_ativos = Cliente.objects.filter(ativo=True).order_by('nome_completo')
     clientes_inativos = Cliente.objects.filter(ativo=False).order_by('nome_completo')
     return render(request, 'core/lista_clientes.html', {
@@ -62,14 +61,12 @@ def lista_clientes(request):
 
 @login_required
 def novo_cliente(request):
-    # Melhorei a lógica de POST para garantir a validação
     if request.method == 'POST':
         form = ClienteForm(request.POST)
         if form.is_valid():
             form.save()
             return redirect('lista_clientes')
         else:
-            # Se houver erro, ele imprime no terminal para você ver
             print(form.errors)
     else:
         form = ClienteForm()
@@ -112,7 +109,12 @@ def gerar_documento(request, cliente_id, modelo_id):
     # Lógica de Gênero
     sufixo = 'a' if cliente.sexo == 'F' else 'o'
     
-    # Mapeamento do contexto atualizado com os novos campos
+    # Lógica condicional para o RG
+    rg_tag = ""
+    if cliente.rg:
+        rg_tag = f", portador{sufixo} da cédula de identidade RG nº {cliente.rg} {cliente.orgao_expeditor}"
+
+    # Mapeamento do contexto para o Word
     contexto = {
         'nome': cliente.nome_completo,
         'nacionalidade': f"brasileir{sufixo}",
@@ -120,9 +122,8 @@ def gerar_documento(request, cliente_id, modelo_id):
         'deficiente_tag': ", deficiente" if cliente.eh_deficiente else "",
         'nascido_tag': f"nascid{sufixo}",
         'data_nasc': cliente.data_nascimento.strftime("%d/%m/%Y") if cliente.data_nascimento else "XX/XX/XXXX",
+        'rg_tag': rg_tag,  # Inclui a frase completa do RG ou fica vazio
         'cpf': cliente.cpf_cnpj,
-        'rg': cliente.rg,
-        'orgao': cliente.orgao_expeditor,
         'rua': cliente.endereco,
         'num': cliente.numero,
         'bairro': cliente.bairro,
