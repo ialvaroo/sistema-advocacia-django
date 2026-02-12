@@ -7,25 +7,24 @@
             <h4 class="mb-0"><i class="bi bi-person-plus-fill me-2"></i>Cadastro de Cliente</h4>
         </div>
         <div class="card-body p-4">
+            
             {% if form.errors %}
-    <div class="alert alert-danger shadow-sm">
-        <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Por favor, corrija os erros abaixo:</h6>
-        <ul class="mb-0 small">
-            {% for field in form %}
-                {% for error in field.errors %}
-                    <li><strong>{{ field.label }}:</strong> {{ error }}</li>
-                {% endfor %}
-            {% endfor %}
-            {% for error in form.non_field_errors %}
-                <li>{{ error }}</li>
-            {% endfor %}
-        </ul>
-    </div>
-{% endif %}
+            <div class="alert alert-danger shadow-sm">
+                <h6 class="fw-bold"><i class="bi bi-exclamation-triangle-fill me-2"></i>Por favor, corrija os erros abaixo:</h6>
+                <ul class="mb-0 small">
+                    {% for field in form %}
+                        {% for error in field.errors %}
+                            <li><strong>{{ field.label }}:</strong> {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                    {% for error in form.non_field_errors %}
+                        <li>{{ error }}</li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
 
-<form method="post">
-...
-            <form method="post">
+            <form method="post" id="formCliente">
                 {% csrf_token %}
                 
                 <div class="row">
@@ -55,13 +54,25 @@
                         <label class="form-label fw-bold small">CPF/CNPJ</label>
                         {{ form.cpf_cnpj }}
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label fw-bold small">RG</label>
-                        {{ form.rg }}
+
+                    <div class="col-md-12 mb-2">
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="check_possui_rg" checked>
+                            <label class="form-check-label fw-bold text-primary" for="check_possui_rg">
+                                O cliente possui RG?
+                            </label>
+                        </div>
                     </div>
-                    <div class="col-md-4 mb-3">
-                        <label class="form-label fw-bold small">Órgão Expeditor</label>
-                        {{ form.orgao_expeditor }}
+
+                    <div id="secao_rg" class="row col-12 p-0 m-0">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small">RG</label>
+                            {{ form.rg }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label fw-bold small">Órgão Expeditor</label>
+                            {{ form.orgao_expeditor }}
+                        </div>
                     </div>
 
                     <hr class="my-3 text-muted">
@@ -118,4 +129,52 @@
         </div>
     </div>
 </div>
+
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+
+<script>
+    $(document).ready(function(){
+        var options = {
+            onKeyPress: function (val, ev, el, op) {
+                var masks = ['000.000.000-000', '00.000.000/0000-00'];
+                var mask = (val.length > 14) ? masks[1] : masks[0];
+                $(el).mask(mask, op);
+            }
+        };
+        $('input[name="cpf_cnpj"]').mask('000.000.000-00', options);
+        $('input[name="cep"]').mask('00000-000');
+        $('input[name="rg"]').mask('00.000.000-A', {
+            translation: { 'A': {pattern: /[a-zA-Z0-9]/} } 
+        });
+
+        // Máscara de Telefone dinâmica
+        var behavior = function (val) {
+            return val.replace(/\D/g, '').length === 11 ? '(00) 00000-0000' : '(00) 0000-00009';
+        },
+        optionsTel = {
+            onKeyPress: function(val, e, field, options) {
+                field.mask(behavior.apply({}, arguments), options);
+            }
+        };
+        $('input[name="contato"]').mask(behavior, optionsTel);
+
+        // 2. LÓGICA MOSTRAR/ESCONDER RG
+        $('#check_possui_rg').change(function() {
+            if($(this).is(":checked")) {
+                $('#secao_rg').slideDown();
+            } else {
+                $('#secao_rg').slideUp();
+                $('input[name="rg"]').val('');
+                $('input[name="orgao_expeditor"]').val('');
+            }
+        });
+
+        
+        if ($('input[name="rg"]').val() == "" && !$('input[name="rg"]').is(':focus')) {
+            $('#check_possui_rg').prop('checked', false);
+            $('#secao_rg').hide();
+        }
+    });
+</script>
 {% endblock %}
