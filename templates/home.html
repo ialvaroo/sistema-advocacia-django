@@ -1,18 +1,80 @@
 {% extends 'base.html' %}
 
 {% block content %}
+
 {% if not user.is_authenticated %}
-<div class="p-5 mb-4 bg-light rounded-3 text-center">
-    <h1 class="display-5 fw-bold">Sistema Jurídico</h1>
-    <p class="fs-4">Gerencie seus processos, documentos e honorários em um só lugar.</p>
-    <a href="{% url 'login' %}" class="btn btn-primary btn-lg">Fazer Login</a>
+<div class="row align-items-center justify-content-center" style="min-height: 80vh;">
+    
+    <div class="col-md-7 d-none d-md-block pe-0">
+        <img src="https://instagram.fpnz10-1.fna.fbcdn.net/v/t51.75761-15/495801730_18357691924178422_8297378968847873177_n.jpg?stp=dst-jpg_e35_p720x720_tt6&_nc_cat=111&ig_cache_key=MzYyNjc2NDU1NTc1NTU4MDgzNA%3D%3D.3-ccb7-5&ccb=7-5&_nc_sid=58cdad&efg=eyJ2ZW5jb2RlX3RhZyI6InhwaWRzLjEwODF4MTM1MS5zZHIuQzMifQ%3D%3D&_nc_ohc=ZyM1C3ovpdMQ7kNvwEt77kb&_nc_oc=Adn97M2iv-R3Vt8DYVxzc4Zt2ZKMcM-2c8wkC1XDB3Ejc-cj83gM9A_BZvz-vh0OS0zoe-68qRb5A8fWyPK-IBe_&_nc_ad=z-m&_nc_cid=0&_nc_zt=23&_nc_ht=instagram.fpnz10-1.fna&_nc_gid=I9c8wc1Mw8qv09gHQNdoAA&oh=00_Afviv1tHG23dFGtVzCAWf67BWA-Lpecy9fqq7n0lXG8fpw&oe=6992F780" 
+             alt="Advocacia" 
+             class="img-fluid rounded-start shadow-lg" 
+             style="height: 600px; width: 100%; object-fit: cover;">
+    </div>
+
+    <div class="col-md-5 ps-0">
+        <div class="card shadow-lg border-0 rounded-end" style="height: 600px;">
+            <div class="card-body p-5 d-flex flex-column justify-content-center">
+                
+                <div class="text-center mb-4">
+                    <i class="bi bi-shield-shaded display-4 text-primary"></i>
+                    <h2 class="fw-bold mt-2">Área do Advogado</h2>
+                    <p class="text-muted">Faça login para gerenciar seu escritório.</p>
+                </div>
+
+                <form action="{% url 'login' %}" method="post">
+                    {% csrf_token %}
+                    
+                    <div class="mb-3">
+                        <label class="fw-bold small text-muted">Usuário</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person"></i></span>
+                            {{ form_login.username }}
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="fw-bold small text-muted">Senha</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-lock"></i></span>
+                            {{ form_login.password }}
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold shadow-sm">
+                        Entrar no Sistema
+                    </button>
+                </form>
+
+                <div class="text-center mt-4 pt-3 border-top">
+                    <small class="text-muted">Ainda não tem conta?</small><br>
+                    <a href="{% url 'cadastro' %}" class="btn btn-outline-secondary btn-sm mt-2">
+                        Cadastrar-se Agora
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
 </div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var inputs = document.querySelectorAll('input');
+        inputs.forEach(function(input) {
+            input.classList.add('form-control');
+            input.classList.add('border-start-0');
+            input.classList.add('bg-light');
+        });
+    });
+</script>
+
 
 {% else %}
 <div class="row mb-4">
     <div class="col-md-12">
         <h2>
-            {% if user.is_superuser %}Painel Administrativo{% else %}Olá, Dr {{ user.username|title }}{% endif %}
+            {% if user.is_superuser %}Painel Administrativo{% else %}Olá, Dr(a). {{ user.username|title }}{% endif %}
         </h2>
         <p class="text-muted">Resumo geral do seu escritório hoje.</p>
     </div>
@@ -20,39 +82,39 @@
 
 <div class="row mb-4">
     <div class="col-md-3">
-        <div class="card text-white bg-primary mb-3 h-100">
-            <div class="card-header">Total de Clientes</div>
+        <div class="card text-white bg-primary mb-3 h-100 shadow-sm border-0">
+            <div class="card-header bg-transparent border-0">Total de Clientes</div>
             <div class="card-body">
-                <h1 class="card-title">{{ total_clientes }}</h1>
+                <h1 class="card-title fw-bold"><i class="bi bi-people me-2"></i>{{ total_clientes }}</h1>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card text-white bg-secondary mb-3 h-100">
-            <div class="card-header">Docs Gerados</div>
+        <div class="card text-white bg-secondary mb-3 h-100 shadow-sm border-0">
+            <div class="card-header bg-transparent border-0">Docs Gerados</div>
             <div class="card-body">
-                <h1 class="card-title">{{ total_docs }}</h1>
+                <h1 class="card-title fw-bold"><i class="bi bi-file-earmark-text me-2"></i>{{ total_docs }}</h1>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card text-white bg-warning mb-3 h-100">
-            <div class="card-header text-dark">A Receber</div>
-            <div class="card-body text-dark">
-                <h2 class="card-title">R$ {{ total_receber|floatformat:2 }}</h2>
-                <small>Honorários Pendentes</small>
+        <div class="card text-dark bg-warning bg-opacity-75 mb-3 h-100 shadow-sm border-0">
+            <div class="card-header bg-transparent border-0 fw-bold">A Receber</div>
+            <div class="card-body">
+                <h2 class="card-title fw-bold">R$ {{ total_receber|floatformat:2 }}</h2>
+                <small><i class="bi bi-hourglass-split"></i> Honorários Pendentes</small>
             </div>
         </div>
     </div>
 
     <div class="col-md-3">
-        <div class="card text-white bg-success mb-3 h-100">
-            <div class="card-header">Já Recebido</div>
+        <div class="card text-white bg-success mb-3 h-100 shadow-sm border-0">
+            <div class="card-header bg-transparent border-0">Já Recebido</div>
             <div class="card-body">
-                <h2 class="card-title">R$ {{ total_recebido|floatformat:2 }}</h2>
-                <small>Honorários Pagos</small>
+                <h2 class="card-title fw-bold">R$ {{ total_recebido|floatformat:2 }}</h2>
+                <small><i class="bi bi-check-circle"></i> Honorários Pagos</small>
             </div>
         </div>
     </div>
@@ -60,44 +122,43 @@
 
 <div class="row">
     <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light">
-                <strong>Últimos Documentos Gerados</strong>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-clock-history me-2"></i>Últimos Documentos Gerados
             </div>
             <ul class="list-group list-group-flush">
                 {% for doc in ultimos_docs %}
-                <li class="list-group-item d-flex justify-content-between align-items-center">
+                <li class="list-group-item d-flex justify-content-between align-items-center py-3">
                     <div>
-                        <strong>{{ doc.tipo }}</strong>
-                        <br>
-                        <small class="text-muted">{{ doc.cliente.nome_completo }}</small>
+                        <strong class="text-primary">{{ doc.tipo }}</strong>
+                        <div class="small text-muted">{{ doc.cliente.nome_completo }}</div>
                     </div>
-                    <span class="badge bg-light text-dark">{{ doc.data_geracao|date:"d/m H:i" }}</span>
+                    <span class="badge bg-light text-dark border">{{ doc.data_geracao|date:"d/m H:i" }}</span>
                 </li>
                 {% empty %}
-                <li class="list-group-item text-center">Nenhum documento recente.</li>
+                <li class="list-group-item text-center py-4 text-muted">Nenhum documento recente.</li>
                 {% endfor %}
             </ul>
-            <div class="card-footer text-center">
-                <a href="{% url 'lista_documentos' %}" class="btn btn-sm btn-outline-secondary">Ver Histórico Completo</a>
+            <div class="card-footer bg-white text-center py-3">
+                <a href="{% url 'lista_documentos' %}" class="btn btn-sm btn-outline-primary fw-bold">Ver Histórico Completo</a>
             </div>
         </div>
     </div>
 
     <div class="col-md-6">
-        <div class="card shadow-sm">
-            <div class="card-header bg-light">
-                <strong>Ações Rápidas</strong>
+        <div class="card shadow-sm border-0">
+            <div class="card-header bg-white fw-bold py-3">
+                <i class="bi bi-lightning-charge me-2"></i>Ações Rápidas
             </div>
-            <div class="card-body d-grid gap-2">
-                <a href="{% url 'novo_cliente' %}" class="btn btn-primary">
-                     Cadastrar Novo Cliente
+            <div class="card-body d-grid gap-3 p-4">
+                <a href="{% url 'novo_cliente' %}" class="btn btn-primary py-2 shadow-sm">
+                     <i class="bi bi-person-plus me-2"></i>Cadastrar Novo Cliente
                 </a>
-                <a href="{% url 'novo_honorario' %}" class="btn btn-success">
-                     Lançar Honorário
+                <a href="{% url 'novo_honorario' %}" class="btn btn-success py-2 shadow-sm">
+                     <i class="bi bi-cash-stack me-2"></i>Lançar Honorário
                 </a>
-                <a href="{% url 'lista_clientes' %}" class="btn btn-outline-dark">
-                     Gerar Documento (Ir p/ Clientes)
+                <a href="{% url 'lista_clientes' %}" class="btn btn-outline-dark py-2">
+                     <i class="bi bi-file-word me-2"></i>Gerar Documento (Ir p/ Clientes)
                 </a>
             </div>
         </div>
